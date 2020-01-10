@@ -1,0 +1,324 @@
+============================================================================================================
+								Day 18 : Period and PeriodIndex
+============================================================================================================
+
+import pandas as pd
+y= pd.Period('2016')
+y
+
+Period('2016', 'A-DEC') 
+"A-DEC" : Annual period, ending on Dec
+
+dir(y) : Gives the property
+
+y.start_time	: 	Timestamp('2016-01-01 00:00:00')
+y.end_time		:	Timestamp('2016-12-31 23:59:59.999999999')
+
+import pandas as pd
+m= pd.Period('2016-1', freq ='M')
+m
+
+Period('2016-01', 'M')
+
+m+1
+Period('2016-02', 'M')
+
+m-1
+Period('2015-12', 'M')
+
+d=pd.Period('2016-02-28', freq='D')
+d
+
+d+1
+Period('2016-02-29', 'D')
+
+d+2
+Period('2016-03-01', 'D')
+
+h=pd.Period('2016-02-28 23:00', freq='H')
+h
+
+Period('2016-02-28 23:00', 'H')
+
+h+2
+
+Period('2016-02-29 01:00', 'H')
+
+h.end_time
+Timestamp('2016-02-28 23:59:59.999999999')
+
+
+QUARTERLY Analysis -
+====================
+
+q=pd.Period('2017',freq='Q')
+q
+
+OR
+
+q=pd.Period('2017Q1')
+q
+
+Period('2017Q1', 'Q-DEC')
+
+q.start_time
+Timestamp('2017-01-01 00:00:00')
+
+For different fiscal year: Wallmart : Feb - Jan
+
+q=pd.Period('2017',freq='Q-JAN')					= Means Q ending in Jan or starting in Nov
+			=====
+q
+
+q.start_time
+Timestamp('2016-11-01 00:00:00')
+
+q.end_time
+Timestamp('2017-01-31 23:59:59.999999999')
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+q=pd.Period('2017Q1',freq='Q-JAN')
+			========
+q
+
+Period('2017Q1', 'Q-JAN')
+
+q.end_time
+
+Timestamp('2016-04-30 23:59:59.999999999')
+
+q.start_time
+Timestamp('2016-02-01 00:00:00')
+
+===============================================
+
+
+PERIOD INDEX :
+^^^^^^^^^^^^^^
+
+idx = pd.period_range("2011","2015",freq='Q')
+idx
+
+PeriodIndex(['2011Q1', '2011Q2', '2011Q3', '2011Q4', '2012Q1', '2012Q2',
+             '2012Q3', '2012Q4', '2013Q1', '2013Q2', '2013Q3', '2013Q4',
+             '2014Q1', '2014Q2', '2014Q3', '2014Q4', '2015Q1'],
+            dtype='period[Q-DEC]', freq='Q-DEC')
+            
+idx.start_time
+
+DatetimeIndex(['2011-01-01', '2011-04-01', '2011-07-01', '2011-10-01',
+               '2012-01-01', '2012-04-01', '2012-07-01', '2012-10-01',
+               '2013-01-01', '2013-04-01', '2013-07-01', '2013-10-01',
+               '2014-01-01', '2014-04-01', '2014-07-01', '2014-10-01',
+               '2015-01-01'],
+               
+idx.end_time
+
+DatetimeIndex(['2011-03-31 23:59:59.999999999','2011-06-30 23:59:59.999999999','2011-09-30 23:59:59.999999999',
+               '2011-12-31 23:59:59.999999999','2012-03-31 23:59:59.999999999','2012-06-30 23:59:59.999999999',
+               '2012-09-30 23:59:59.999999999','2012-12-31 23:59:59.999999999','2013-03-31 23:59:59.999999999',
+               '2013-06-30 23:59:59.999999999','2013-09-30 23:59:59.999999999','2013-12-31 23:59:59.999999999',
+               '2014-03-31 23:59:59.999999999','2014-06-30 23:59:59.999999999','2014-09-30 23:59:59.999999999',
+               '2014-12-31 23:59:59.999999999','2015-03-31 23:59:59.999999999'],
+
+idx = pd.period_range("2011","2015",freq='Q-JAN')
+idx
+
+PeriodIndex(['2011Q4', '2012Q1', '2012Q2', '2012Q3', '2012Q4', '2013Q1',
+             '2013Q2', '2013Q3', '2013Q4', '2014Q1', '2014Q2', '2014Q3',
+             '2014Q4', '2015Q1', '2015Q2', '2015Q3', '2015Q4'],
+            dtype='period[Q-JAN]', freq='Q-JAN')
+            
+
+idx.start_time
+
+DatetimeIndex(['2010-11-01', '2011-02-01', '2011-05-01', '2011-08-01',
+               '2011-11-01', '2012-02-01', '2012-05-01', '2012-08-01',
+               '2012-11-01', '2013-02-01', '2013-05-01', '2013-08-01',
+               '2013-11-01', '2014-02-01', '2014-05-01', '2014-08-01',
+               '2014-11-01'],
+              dtype='datetime64[ns]', freq='QS-NOV')
+              
+idx[0].start_time
+
+Timestamp('2010-11-01 00:00:00')
+
+
+idx[0].end_time
+
+Timestamp('2011-01-31 23:59:59.999999999')
+
+
+EXERCISE =
+==========
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day18_Wallmart.csv')
+df.set_index('Line Item', inplace=True)
+df
+
+We need to transpose the matrix and add two column start time and end time for the Line Item Quarter for Wallmart
+
+Line Item	2017Q1	2017Q2	2017Q3	2017Q4	2018Q1		
+Revenue		115904	120854	118179	130936	117542
+Expenses	86544	89485	87484	97743	87688
+Profit		29360	31369	30695	33193	29854
+
+df=df.T
+df
+
+Line Item	Revenue		Expenses	Profit
+2017Q1		115904		86544		29360
+2017Q2		120854		89485		31369
+2017Q3		118179		87484		30695
+2017Q4		130936		97743		33193
+2018Q1		117542		87688		29854
+
+df.index
+
+Index(['Revenue', 'Expenses', 'Profit'], dtype='object', name='Line Item') : It is of type object: We need to convert it
+
+df.index = pd.PeriodIndex(df.index, freq="Q-JAN")
+df.index
+
+PeriodIndex(['2017Q1', '2017Q2', '2017Q3', '2017Q4', '2018Q1'], dtype='period[Q-JAN]', freq='Q-JAN')
+
+df.index[0].start_time
+Timestamp('2016-02-01 00:00:00')
+
+
+df["Start Date"]=df.index.map(lambda x: x.start_time)
+df
+
+
+df["End Date"]=df.index.map(lambda x: x.end_time)
+df	
+
+Line Item	Revenue		Expenses	Profit	Start Date	End Date
+2017Q1		115904		86544		29360	2016-02-01	2016-04-30 23:59:59.999999999
+2017Q2		120854		89485		31369	2016-05-01	2016-07-31 23:59:59.999999999
+2017Q3		118179		87484		30695	2016-08-01	2016-10-31 23:59:59.999999999
+2017Q4		130936		97743		33193	2016-11-01	2017-01-31 23:59:59.999999999
+2018Q1		117542		87688		29854	2017-02-01	2017-04-30 23:59:59.999999999
+
+============================================================================================================
+								Day 19 : TimeZone
+============================================================================================================
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day19.csv', index_col ="Date Time", parse_dates = True)
+df
+
+	Date Time				Price
+0	8/17/2017 9:00:00 AM	72.38
+1	8/17/2017 9:15:00 AM	71.00
+2	8/17/2017 9:30:00 AM	71.67
+3	8/17/2017 10:00:00 AM	72.80
+4	8/17/2017 10:30:00 AM	73.00
+5	8/17/2017 11:00:00 AM	72.50
+
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day19.csv', index_col ="Date Time", parse_dates = True)
+df
+
+	
+Date Time				Price
+2017-08-17 09:00:00		72.38
+2017-08-17 09:15:00		71.00
+2017-08-17 09:30:00		71.67
+2017-08-17 10:00:00		72.80
+2017-08-17 10:30:00		73.00
+2017-08-17 11:00:00		72.50
+
+Two Type of date Time:
+1- Naive : No info on date time zone.
+2- Time Zone aware date time.
+
+df.index
+
+DatetimeIndex(['2017-08-17 09:00:00', '2017-08-17 09:15:00',
+               '2017-08-17 09:30:00', '2017-08-17 10:00:00',
+               '2017-08-17 10:30:00', '2017-08-17 11:00:00'],
+              dtype='datetime64[ns]', name='Date Time', freq=None)
+              
+Has no info on timezone 
+
+We need to convert using localize first
+
+df.index = df.index.tz_localize(tz='US/Eastern')
+df.index
+
+DatetimeIndex(['2017-08-17 09:00:00-04:00', '2017-08-17 09:15:00-04:00',
+               '2017-08-17 09:30:00-04:00', '2017-08-17 10:00:00-04:00',
+               '2017-08-17 10:30:00-04:00', '2017-08-17 11:00:00-04:00'],
+              dtype='datetime64[ns, US/Eastern]', name='Date Time', freq=None)
+
+
+df = df.tz_convert('Europe/Berlin')
+df
+
+Date Time						PRICE
+2017-08-17 15:00:00+02:00		72.38
+2017-08-17 15:15:00+02:00		71.00
+2017-08-17 15:30:00+02:00		71.67
+2017-08-17 16:00:00+02:00		72.80
+2017-08-17 16:30:00+02:00		73.00
+2017-08-17 17:00:00+02:00		72.50
+
+TO GET ALL TIMEZONE : 
+from pytz import all_timezones
+print (all_timezones)
+
+df = df.tz_convert('Asia/Calcutta')
+df
+
+OR
+
+df.index = df.index.tz_convert('Asia/Calcutta')
+df 
+# tz database doesn't have any Mumbai timezone but calcutta and mumbai are both in same timezone so we will use that
+
+
+Date Time						Price
+2017-08-17 18:30:00+05:30		72.38
+2017-08-17 18:45:00+05:30		71.00
+2017-08-17 19:00:00+05:30		71.67
+2017-08-17 19:30:00+05:30		72.80
+
+Using TimeZone with Date Range
+=============================================
+
+london = pd.date_range('3/6/2012 00:09:00', periods=10, freq='H')
+london
+
+DatetimeIndex(['2012-03-06 00:09:00', '2012-03-06 01:09:00',
+               '2012-03-06 02:09:00', '2012-03-06 03:09:00',
+               '2012-03-06 04:09:00', '2012-03-06 05:09:00',
+               '2012-03-06 06:09:00', '2012-03-06 07:09:00',
+               '2012-03-06 08:09:00', '2012-03-06 09:09:00'],
+              dtype='datetime64[ns]', freq='H')
+              
+london = pd.date_range('3/6/2012 00:09:00', periods=10, freq='H',tz='Europe/London')
+london
+
+DatetimeIndex(['2012-03-06 00:09:00+00:00', '2012-03-06 01:09:00+00:00',
+               '2012-03-06 02:09:00+00:00', '2012-03-06 03:09:00+00:00',
+               '2012-03-06 04:09:00+00:00', '2012-03-06 05:09:00+00:00',
+               '2012-03-06 06:09:00+00:00', '2012-03-06 07:09:00+00:00',
+               '2012-03-06 08:09:00+00:00', '2012-03-06 09:09:00+00:00'],
+              dtype='datetime64[ns, Europe/London]', freq='H')
+​
+2017-08-17 20:00:00+05:30		73.00
+2017-08-17 20:30:00+05:30		72.50
+
+o
+
+
+
+
+
+
+
+
+

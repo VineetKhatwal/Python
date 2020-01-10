@@ -1,0 +1,569 @@
+============================================================================================================
+								Day 13 : Cross tab : Contingency Table
+============================================================================================================
+
+
+import pandas as pd
+df = pd.read_excel('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day13_Survey.xls')
+df
+
+
+	Name	Nationality	Sex		Age	Handedness
+0	Kathy	USA			Female	23	Right
+1	Linda	USA			Female	18	Right
+2	Peter	USA			Male	19	Right
+3	John	USA			Male	22	Left
+4	Fatima	Bangadesh	Female	31	Left
+5	Kadir	Bangadesh	Male	25	Left
+6	Dhaval	India		Male	35	Left
+7	Sudhir	India		Male	31	Left
+8	Parvir	India		Male	37	Right
+9	Yan		China		Female	52	Right
+10	Juan	China		Female	58	Left
+11	Liang	China		Male	43	Left
+
+Crosstab	: 	Shows the frequencies of occurrences
+=========		===================================
+pd.crosstab(df.Nationality, df.Handedness)
+
+Handedness	Left	Right
+Nationality		
+Bangadesh	2		0
+China		2		1
+India		2		1
+USA			1		3
+
+
+pd.crosstab(df.Sex, df.Handedness)
+
+Handedness	Left	Right
+Sex		
+Female		2		3
+Male		5		2
+
+
+margins = 'True' gets us the sum at column and row level
+======================================================
+
+pd.crosstab(df.Sex, df.Handedness, margins = True)
+
+Handedness	Left	Right	All
+Sex			
+Female		2		3		5
+Male		5		2		7
+All			7		5		12
+
+for multiple columns, use list:
+=================================
+
+At Row level:
+=================
+
+pd.crosstab(df.Sex, [df.Nationality, df.Handedness], margins = True)
+
+Nationality	Bangadesh	China			India			USA				All
+Handedness	Left		Left	Right	Left	Right	Left	Right	
+Sex								
+Female		1			1		1		0		0		0		2		5
+Male		1			1		0		2		1		1		1		7
+All			2			2		1		2		1		1		3		12
+
+At Columns level:
+=================
+
+pd.crosstab([df.Nationality,df.Sex],[df.Handedness], margins = True)
+
+			Handedness	Left	Right	All
+Nationality	Sex			
+Bangadesh	Female		1		0		1
+			Male		1		0		1
+China		Female		1		1		2
+			Male		1		0		1
+India		Male		2		1		3
+USA			Female		0		2		2
+			Male		1		1		2
+All						7		5		12
+
+Getting results as Percentage:
+==============================
+
+pd.crosstab(df.Sex, df.Handedness, normalize="index")
+
+Handedness	Left		Right
+Sex		
+Female		0.400000	0.600000
+Male		0.714286	0.285714
+
+To get the average age of employees based on handedness:
+============================================================
+import numpy as np
+pd.crosstab(df.Sex, df.Handedness, values=df.Age, aggfunc=np.average)
+
+Handedness	Left	Right
+Sex		
+Female		44.5	31.0
+Male		31.2	28.0
+
+
+============================================================================================================
+							Day 14 : Time Series Analysis 1 | DateTimeIndex and ReSample
+============================================================================================================
+
+Timeseries is a set of data points indexed in timeorder
+=======================================================
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day14_DateTimeIndex_Apple.csv')
+df
+
+Here : type(df.Date[0]) in String
+type(df.Date[0])
+str
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day14_DateTimeIndex_Apple.csv', parse_dates = ['Date'])
+df
+
+Use parse_dates to change date format :
+type(df.Date[0])
+pandas._libs.tslibs.timestamps.Timestamp
+
+Set Index
+
+df.set_index('Date', inplace=True)
+
+
+			Open	High	Low		Close	Volume
+Date					
+2017-01-31	121.15	121.39	120.62	121.35	49200993
+2017-01-30	120.93	121.63	120.66	121.63	30377503
+2017-01-27	122.14	122.35	121.60	121.95	20562944
+2017-01-26	121.67	122.44	121.60	121.94	26337576
+2017-01-25	120.42	122.10	120.28	121.88	32586673
+
+=====================================
+
+df["2017-01"] : Partial Index
+Gives data only for Jan 2017
+
+
+To find data in a range:
+
+df["2017-02-01" : "2017-01-01"]
+
+df["2017-03" : "2017-01"]
+
+To find the mean of Close Price in the month of Jan
+
+df["2017-01"].Close.mean()
+
+df["2017-03" : "2017-01"].High.mean()
+
+
+============================
+******  RESAMPLING  ********
+============================
+
+df.Close.resample('M')
+DatetimeIndexResampler [freq=<MonthEnd>, axis=0, closed=right, label=right, convention=start, base=0]
+
+=============================
+df.Close.resample('M').mean()
+
+Gives the monthly mean for Close values
+
+Date
+2016-07-31     99.473333
+2016-08-31    107.665217
+2016-09-30    110.857143
+2016-10-31    115.707143
+2016-11-30    110.154286
+
+
+df.Close.resample('Y').mean()
+
+Date
+2016-12-31    110.168361
+2017-12-31    139.975349
+
+df.Close.resample('W').mean()
+
+Date
+2016-07-17     97.7680
+2016-07-24     99.5500
+2016-07-31    101.1020
+2016-08-07    105.9340
+
+%matplotlib inline
+df.Close.resample('W').mean().plot()
+
+Plots the graph
+
+%matplotlib inline
+df.Close.resample('Q').mean().plot()
+
+%matplotlib inline
+df.Close.resample('Q').mean().plot(kind="bar")
+
+%matplotlib inline
+df.Close.plot()
+
+============================================================================================================
+							Day 15 : Time Series Analysis 2 | DateRange
+============================================================================================================
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day15_DateRange_Apple.csv')
+df
+
+		Open	High	Low		Close	Volume
+0		153.17	153.33	152.22	153.18	16404088
+1		153.58	155.45	152.89	155.45	27770715
+2		154.34	154.45	153.46	153.93	25331662
+3		153.90	155.81	153.78	154.45	26624926
+4		155.02	155.98	154.48	155.37	21069647
+5		155.25	155.54	154.40	154.99	21250798
+6		155.19	155.19	146.02	148.98	64882657
+
+rng = pd.date_range(start = '6/1/2019', end='6/30/2019', freq="B")
+rng
+
+Get the dates using DateRange :
+------------------------------
+
+DatetimeIndex(['2019-06-03', '2019-06-04', '2019-06-05', '2019-06-06',
+               '2019-06-07', '2019-06-10', '2019-06-11', '2019-06-12',
+               '2019-06-13', '2019-06-14', '2019-06-17', '2019-06-18',
+               '2019-06-19', '2019-06-20', '2019-06-21', '2019-06-24',
+               '2019-06-25', '2019-06-26', '2019-06-27', '2019-06-28'],
+              dtype='datetime64[ns]', freq='B')
+              
+freq='B' : Business Day
+========================
+              
+Use set_index for setting date :
+-------------------------------
+
+df.set_index(rng, inplace=True)
+df
+
+			Open	High	Low		Close	Volume
+2019-06-03	153.17	153.33	152.22	153.18	16404088
+2019-06-04	153.58	155.45	152.89	155.45	27770715
+2019-06-05	154.34	154.45	153.46	153.93	25331662
+2019-06-06	153.90	155.81	153.78	154.45	26624926
+2019-06-07	155.02	155.98	154.48	155.37	21069647
+2019-06-10	155.25	155.54	154.40	154.99	21250798
+2019-06-11	155.19	155.19	146.02	148.98	64882657
+
+NOTE - df and rng should have same number of rows
+======
+
+%matplotlib inline
+df.Close.plot()
+
+df["2019-06"].High.mean()
+df["2019-06":"2019-07"].High.mean()
+df["2019-06-03":"2019-06-15"]
+df["2019-06-03":"2019-06-15"].High.mean()
+
+For weekend:
+========================
+
+df.asfreq('D',method="pad")
+
+Carries the prices of Friday to the weekend
+
+			Open	High	Low		Close	Volume
+2019-06-03	153.17	153.33	152.22	153.18	16404088
+2019-06-04	153.58	155.45	152.89	155.45	27770715
+2019-06-05	154.34	154.45	153.46	153.93	25331662
+2019-06-06	153.90	155.81	153.78	154.45	26624926
+2019-06-07	155.02	155.98	154.48	155.37	21069647
+------ Copying the friday price to the weekend -----
+2019-06-08	155.02	155.98	154.48	155.37	21069647
+2019-06-09	155.02	155.98	154.48	155.37	21069647
+----------------------------------------------------
+2019-06-10	155.25	155.54	154.40	154.99	21250798
+
+df.asfreq('W',method="pad")
+
+Shows the price from SUNDAY (which are copied from friday) : NOTE : df.asfreq('W') : Blank data as data is not copied from friday
+           
+df.asfreq('H',method="pad") 
+Shows hourly prices
+
+When we dont know the end data but know the number of periods:
+rng = pd.date_range(start = '6/1/2019', period = 22, freq="B")
+rng
+
+Will give the next 22 business dates
+
+============================================================================================================
+								Day 16 : Time Series :  Holidays
+============================================================================================================
+
+import pandas as pd
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day15_DateRange_Apple.csv')
+df
+
+rng = pd.date_range(start = '7/1/2017', end='8/1/2017', freq="B")
+rng
+
+DatetimeIndex(['2017-07-03', '2017-07-04', '2017-07-05', '2017-07-06',
+               '2017-07-07', '2017-07-10', '2017-07-11', '2017-07-12',
+               '2017-07-13', '2017-07-14', '2017-07-17', '2017-07-18',
+               '2017-07-19', '2017-07-20', '2017-07-21', '2017-07-24',
+               '2017-07-25', '2017-07-26', '2017-07-27', '2017-07-28',
+               '2017-07-31', '2017-08-01'],
+              dtype='datetime64[ns]', freq='B')
+              
+But 7/4/2017 was a holiday
+So, 
+df.set_index(rng, inplace=True)
+df will not work.
+
+We will need to import holiday calendar
+
+from pandas.tseries.holiday import USFederalHolidayCalendar
+from pandas.tseries.offsets import CustomBusinessDay
+
+US_CAL = CustomBusinessDay(calendar = USFederalHolidayCalendar())
+
+rng = pd.date_range(start = '7/1/2017', end='8/1/2017', freq=US_CAL)
+rng
+
+This will not have 7/4/2017 as a working day
+
+DatetimeIndex(['2017-07-03', '2017-07-05', '2017-07-06', '2017-07-07',
+               '2017-07-10', '2017-07-11', '2017-07-12', '2017-07-13',
+               '2017-07-14', '2017-07-17', '2017-07-18', '2017-07-19',
+               '2017-07-20', '2017-07-21', '2017-07-24', '2017-07-25',
+               '2017-07-26', '2017-07-27', '2017-07-28', '2017-07-31',
+               '2017-08-01'],
+              dtype='datetime64[ns]', freq='C')
+
+Add one more day to have 22 matching records
+
+from pandas.tseries.holiday import USFederalHolidayCalendar
+from pandas.tseries.offsets import CustomBusinessDay
+
+US_CAL = CustomBusinessDay(calendar = USFederalHolidayCalendar())
+
+rng = pd.date_range(start = '7/1/2017', end='8/2/2017', freq=US_CAL)
+rng
+
+df.set_index(rng, inplace=True)
+df
+
+			Open	High	Low		Close	Volume
+2017-07-03	153.17	153.33	152.22	153.18	16404088
+2017-07-05	153.58	155.45	152.89	155.45	27770715
+2017-07-06	154.34	154.45	153.46	153.93	25331662
+2017-07-07	153.90	155.81	153.78	154.45	26624926
+2017-07-10	155.02	155.98	154.48	155.37	21069647
+2017-07-11	155.25	155.54	154.40	154.99	21250798
+2017-07-12	155.19	155.19	146.02	148.98	64882657
+2017-07-13	145.74	146.09	142.51	145.42	72307330
+    
+To create custom calendar-
+
+https://www.youtube.com/watch?v=Fo0IMzfcnQE&list=PLeo1K3hjS3uuASpe-1LjfG5f14Bnozjwy&index=16
+watch from 4 :30 
+
+Creating Your Own Calendar-
+=============================
+
+from pandas.tseries.holiday import AbstractHolidayCalendar, nearest_workday, Holiday
+
+class myCalendar(AbstractHolidayCalendar):
+    rules = [
+        Holiday('My Birth Day', month=4, day=12),#, observance=nearest_workday),
+    ]
+    
+my_bday = CustomBusinessDay(calendar=myCalendar())
+pd.date_range('4/1/2017','4/30/2017',freq=my_bday)
+
+---------------------------------------------------
+DatetimeIndex(['2017-04-03', '2017-04-04', '2017-04-05', '2017-04-06',
+               '2017-04-07', '2017-04-10', '2017-04-11', '2017-04-13',
+               '2017-04-14', '2017-04-17', '2017-04-18', '2017-04-19',
+               '2017-04-20', '2017-04-21', '2017-04-24', '2017-04-25',
+               '2017-04-26', '2017-04-27', '2017-04-28'],
+              dtype='datetime64[ns]', freq='C')
+              
+-----------------------------------------------------------------
+If a holiday falls on weekend, move it to nearest (before or after) business day:
+------------------------------------------------------------------
+
+from pandas.tseries.holiday import AbstractHolidayCalendar, nearest_workday, Holiday
+
+class myCalendar(AbstractHolidayCalendar):
+    rules = [
+        Holiday('My Birth Day', month=4, day=15, observance=nearest_workday),
+    ]
+    
+my_bday = CustomBusinessDay(calendar=myCalendar())
+pd.date_range('4/1/2017','4/30/2017',freq=my_bday)
+
+
+DatetimeIndex(['2017-04-03', '2017-04-04', '2017-04-05', '2017-04-06',
+               '2017-04-07', '2017-04-10', '2017-04-11', '2017-04-12',
+               '2017-04-13', '2017-04-17', '2017-04-18', '2017-04-19',
+               '2017-04-20', '2017-04-21', '2017-04-24', '2017-04-25',
+               '2017-04-26', '2017-04-27', '2017-04-28'],
+              dtype='datetime64[ns]', freq='C')
+              
+4/15 was a sunday, so it was pushed to 4/16
+
+========================
+
+Setting holidays-
+
+new_Cal = CustomBusinessDay(weekmask="Mon Tue Wed Thu")
+pd.date_range(start = '7/1/2017', end='8/2/2017', freq=new_Cal)
+
+
+DatetimeIndex(['2017-07-03', '2017-07-04', '2017-07-05', '2017-07-06',
+               '2017-07-10', '2017-07-11', '2017-07-12', '2017-07-13',
+               '2017-07-17', '2017-07-18', '2017-07-19', '2017-07-20',
+               '2017-07-24', '2017-07-25', '2017-07-26', '2017-07-27',
+               '2017-07-31', '2017-08-01', '2017-08-02'],
+               
+               
+               
+new_Cal = CustomBusinessDay(weekmask="Mon Tue Wed Thu", holidays =["2017-07-04"])
+pd.date_range(start = '7/1/2017', end='8/2/2017', freq=new_Cal)
+
+
+DatetimeIndex(['2017-07-03', '2017-07-05', '2017-07-06', '2017-07-10',
+               '2017-07-11', '2017-07-12', '2017-07-13', '2017-07-17',
+               '2017-07-18', '2017-07-19', '2017-07-20', '2017-07-24',
+               '2017-07-25', '2017-07-26', '2017-07-27', '2017-07-31',
+               '2017-08-01', '2017-08-02'],
+
+============================================================================================================
+								Day 17 : Time Series : to_datetime
+============================================================================================================
+
+5 January 2017 can be represented as-
+
+['2017-01-05', 'Jan 5, 2017', '01/05/2017', '2017.01.05', '2017/01/05','20170105']
+
+Use to_datetime-
+===============
+
+import pandas as pd
+dates = ['2017-01-05', 'Jan 5, 2017', '01/05/2017', '2017.01.05', '2017/01/05','20170105']
+pd.to_datetime(dates)
+
+
+DatetimeIndex(['2017-01-05', '2017-01-05', '2017-01-05', '2017-01-05',
+               '2017-01-05', '2017-01-05'],
+              dtype='datetime64[ns]', freq=None)
+              
+Also handles time-
+=================
+
+import pandas as pd
+dates = ['2017-01-05 2:30:00 PM', 'Jan 5, 2017 14:30', '01/05/2017', '2017.01.05', '2017/01/05','20170105']
+pd.to_datetime(dates)
+
+DatetimeIndex(['2017-01-05 14:30:00', '2017-01-05 14:30:00',
+               '2017-01-05 00:00:00', '2017-01-05 00:00:00',
+               '2017-01-05 00:00:00', '2017-01-05 00:00:00'],
+              dtype='datetime64[ns]', freq=None)
+
+NOTE-
+======
+US 	:	yyyy/mm/dd
+EUR	:	yyyy/dd/mm
+
+import pandas as pd
+dates = ('5/1/2017')
+pd.to_datetime(dates)
+
+DatetimeIndex(['2017-05-01'], dtype='datetime64[ns]', freq=None)
+
+OR
+
+pd.to_datetime('5-1-2017')
+
+Timestamp('2017-05-01 00:00:00')
+
+Works fine for US :
+But not for EUR
+
+For EUR :
+
+import pandas as pd
+pd.to_datetime('5-1-2016', dayfirst=True)
+
+Timestamp('2016-01-05 00:00:00')
+
+To use own format-
+===================
+
+pd.to_datetime('5$1$2017', format='%d$%m$%Y')
+
+Timestamp('2017-01-05 00:00:00')
+
+
+pd.to_datetime('5#1#2017', format='%d#%m#%Y',  dayfirst=True)
+Timestamp('2017-01-05 00:00:00')
+
+==================================
+
+To ignore incorrect dates -
+
+import pandas as pd
+dates = ['2017-01-05 2:30:00 PM', 'Jan 5, 2017 14:30', '01/05/2017', '2017.01.05', '2017/01/05','20170105','abc']
+pd.to_datetime(dates)
+
+: THROWS ERROR
+
+import pandas as pd
+dates = ['2017-01-05 2:30:00 PM', 'Jan 5, 2017 14:30', '01/05/2017', '2017.01.05', '2017/01/05','20170105','abc']
+pd.to_datetime(dates, errors = "ignore")
+
+Index(['2017-01-05 2:30:00 PM', 'Jan 5, 2017 14:30', '01/05/2017',
+       '2017.01.05', '2017/01/05', '20170105', 'abc'],
+      dtype='object')
+      
+NOTE - This will not process the valid dates, to process them use "coerce"
+==========================================================================
+
+import pandas as pd
+dates = ['2017-01-05 2:30:00 PM', 'Jan 5, 2017 14:30', '01/05/2017', '2017.01.05', '2017/01/05','20170105','abc']
+pd.to_datetime(dates, errors = "coerce")
+
+DatetimeIndex(['2017-01-05 14:30:00', '2017-01-05 14:30:00',
+               '2017-01-05 00:00:00', '2017-01-05 00:00:00',
+               '2017-01-05 00:00:00', '2017-01-05 00:00:00',
+                               'NaT'],
+                               
+Inverted String becomes : NaT [Not a time stamp]
+================================================
+
+Handling EPOCH or UNIX time : Number of seconds passed from  Jan 1, 1970
+    
+t = 1501324478
+pd.to_datetime(t)
+
+Timestamp('1970-01-01 00:00:01.501324478') : By default the unit in nano seconds
+
+Use unit to covert to seconds:
+==============================
+
+t = 1501324478
+pd.to_datetime(t, unit='s')
+
+Timestamp('2017-07-29 10:34:38')
+
+
+To get the time in index:
+
+t = 1501324478
+pd.to_datetime([t], unit='s')
+
+DatetimeIndex(['2017-07-29 10:34:38'], dtype='datetime64[ns]', freq=None)

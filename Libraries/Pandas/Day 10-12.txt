@@ -1,0 +1,266 @@
+============================================================================================================
+								Day 10 : Pivot Table
+============================================================================================================
+
+Pivot allows us to transform or reshape data
+
+import pandas as pd
+import numpy as np
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day10_Pivot.csv')
+df
+
+	date		city		temperature	humidity
+0	5/1/2017	new york	65			56
+1	5/2/2017	new york	66			58
+2	5/3/2017	new york	68			60
+3	5/1/2017	mumbai		75			80
+4	5/2/2017	mumbai		78			83
+5	5/3/2017	mumbai		82			85
+6	5/1/2017	beijing		80			26
+7	5/2/2017	beijing		77			30
+8	5/3/2017	beijing		79			35
+
+df.pivot(index="date",columns="city")
+
+index = "date" : The rows 
+columns = "city" : The columns : Sorted by default from left to right
+
+				temperature						humidity
+city		beijing	mumbai	new york	beijing	mumbai	new york
+
+date						
+5/1/2017	80		75		65			26		80		56
+5/2/2017	77		78		66			30		83		58
+5/3/2017	79		82		68			35		85		60
+.
+==============>
+When we want only one column, use values
+
+df.pivot(index="date",columns="city", values="humidity")
+
+city		beijing	mumbai	new york
+date			
+5/1/2017	26		80		56
+5/2/2017	30		83		58
+5/3/2017	35		85		60
+
+
+=====================================================================================================================
+
+Pivot table allows us to summarize and aggregate data inside data frame
+
+import pandas as pd
+import numpy as np
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day10_PivotTable.csv')
+df
+
+For same day we have two values:
+
+	date		city		temperature	humidity
+0	5/1/2017	new york	65			56
+1	5/1/2017	new york	61			54
+2	5/2/2017	new york	70			60
+3	5/2/2017	new york	72			62
+4	5/1/2017	mumbai		75			80
+5	5/1/2017	mumbai		78			83
+6	5/2/2017	mumbai		82			85
+7	5/2/2017	mumbai		80			26
+
+
+df.pivot_table(index="date",columns="city")
+
+			humidity			temperature
+city		mumbai	new york	mumbai	new york
+date				
+5/1/2017	81.5	55.0		76.5	63.0
+5/2/2017	55.5	61.0		81.0	71.0
+
+NOTE - Above, we got the average (Mumbai 5/1/2017 : temp = (75+78)/2)
+======
+
+To add more columns
+
+df.pivot_table(index="date",columns="city", aggfunc ="sum")
+
+			humidity			temperature
+city		mumbai	new york	mumbai	new york
+date				
+5/1/2017	163		110			153		126
+5/2/2017	111		122			162		142
+
+NOTE - More numpy functions as https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.math.html
+======
+
+df.pivot_table(index="date",columns="city", margins =True)
+
+Will provide margins in the result, and also provide mean at the end in the row "All"
+
+5/1/2017	81.5	55.0	68.25	76.50	63.0	69.750
+5/2/2017	55.5	61.0	58.25	81.00	71.0	76.000
+All			68.5	58.0	63.25	78.75	67.0	72.875
+
+
+=======================================================================================
+
+import pandas as pd
+import numpy as np
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day10.csv')
+df
+
+
+		date		city		temperature		humidity
+0		5/1/2017	new york	65				56
+1		5/2/2017	new york	61				54
+2		5/3/2017	new york	70				60
+3		12/1/2017	new york	30				50
+4		12/2/2017	new york	28				52
+5		12/3/2017	new york	25				51
+
+
+df['date']=pd.to_datetime(df['date'])
+
+df.pivot_table(index=pd.Grouper(freq='M',key="date"), columns="city")
+
+			humidity	temperature
+city		 new york	new york
+date		
+2017-05-31	56.666667	65.333333
+2017-12-31	51.000000	27.666667
+
+============================================================================================================
+								Day 11 : Reshape DataFrame using melt
+============================================================================================================
+
+Melt is used to reshape and transform data : Similar to pivot table
+===================================================================
+import pandas as pd
+import numpy as np
+df = pd.read_csv('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day11_Melt.csv')
+df
+
+	day		chicago	chennai	berlin
+0	Monday		32		75	41
+1	Tuesday		30		77	43
+2	Wednesday	28		75	45
+3	Thursday	22		82	38
+4	Friday		30		83	30
+5	Saturday	20		81	45
+6	Sunday		25		77	47
+
+df_melt = pd.melt(df, id_vars=['day'])
+df_melt
+
+	day			variable	value
+0	Monday		chicago		32
+1	Tuesday		chicago		30
+2	Wednesday	chicago		28
+3	Thursday	chicago		22
+4	Friday		chicago		30
+5	Saturday	chicago		20
+6	Sunday		chicago		25
+7	Monday		chennai		75
+8	Tuesday		chennai		77
+9	Wednesday	chennai		75
+10	Thursday	chennai		82
+11	Friday		chennai		83
+12	Saturday	chennai		81
+13	Sunday		chennai		77
+14	Monday		berlin		41
+15	Tuesday		berlin		43
+16	Wednesday	berlin		45
+17	Thursday	berlin		38
+18	Friday		berlin		30
+19	Saturday	berlin		45
+20	Sunday		berlin		47
+
+For any specific column:
+========================
+
+df_melt[df_melt["variable"]=="chicago"]
+
+	day			variable	value
+0	Monday		chicago		32
+1	Tuesday		chicago		30
+2	Wednesday	chicago		28
+3	Thursday	chicago		22
+4	Friday		chicago		30
+5	Saturday	chicago		20
+6	Sunday		chicago		25
+7	Monday		chennai		75
+
+====================================
+
+To rename the column value:
+
+df_melt = pd.melt(df, id_vars=['day'], var_name="city", value_name = "temperature")
+df_melt
+
+	day			city	temperature
+0	Monday		chicago		32
+1	Tuesday		chicago		30
+2	Wednesday	chicago		28
+
+
+============================================================================================================
+								Day 12 : Stack Unstack
+============================================================================================================
+
+Stack is also used to reshape and transform data : Reversal of pivot : Used to transpose from innermost level
+==================================================
+
+Useful in stock market
+
+
+import pandas as pd
+import numpy as np
+df = pd.read_excel('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day12_stocks.xlsx',header=[0,1])
+df
+
+							Price							Price to earnings ratio (P/E)
+	Company			Facebook	Google	Microsoft	Facebook	Google	Microsoft
+0	2017-06-05		155			955		66			37.10		32.0	30.31
+1	2017-06-06		150			987		69			36.98		31.3	30.56
+2	2017-06-07		153			963		62			36.78		31.7	30.46
+3	2017-06-08		155			1000	61			36.11		31.2	30.11
+4	2017-06-09		156			1012	66			37.07		30.0	31.00
+
+df.stack()   : This is level = 1
+==============
+									Price		Price to earnings ratio (P/E)	
+						Company					
+2017-06-05				Facebook	155.0							37.10	
+						Google		955.0							32.00	
+						Microsoft	66.0							30.31	
+2017-06-06				Facebook	150.0							36.98	
+						Google		987.0							31.30	
+						Microsoft	69.0							30.56
+2017-06-07				Facebook	153.0							36.78	
+						Google		963.0							31.70	
+						Microsoft	62.0							30.46	
+Rest data also same
+
+
+df.stack(level=0)
+==============
+
+						
+						Company		Facebook	Google	Microsoft
+2017-06-05				Price		155			955		66		
+						(P/E)		37.10		32.0	30.31						
+2017-06-06				Price		150			987		69	
+						(P/E)		36.98		31.3	30.56
+						
+To get back the original data:
+
+df.stack.unstack() or df_stk = df.stack and then df_stk.unstack()
+
+=============================
+
+import pandas as pd
+df = pd.read_excel('/Users/Shaheen/Desktop/Vineet/MS_SE_Spring2019/Python/Pandas/Day12_stocks_3_levels.xlsx',header=[0,1,2])
+df
+
+See the video : 
+Time : 3:20
+https://www.youtube.com/watch?v=BUOy4RUUepg&list=PLeo1K3hjS3uuASpe-1LjfG5f14Bnozjwy&index=12
+
