@@ -1,0 +1,40 @@
+Array Representaion of Tree
+
+Index starts at 0-
+==================
+Left Child : 2i + 1
+Right Child : 2i + 2
+Parent : (i - 1)/2
+
+Full Binary Tree: Has all possible Nodes
+No of nodes = 2^(h+1) - 1           h = height
+
+Complete Binary Tree: No missing element between first and last element (Height = log n)
+A B C D E , A B C D E F
+A B C     F G
+
+Every Full Binary Tree is also a Complete Binary Tree
+A complete binary tree is a full binary tree upto height h-1 (h = height of the tree)
+
+Heap:
+Heap is a complete binary tree
+Max heap : Every parent has a value greater than equal to all its descendents.
+Min heap : Every parent has a value smaller than equal to all its descendents.
+
+Insertion : O(log n) : Start at the end. Direction of adjustment : Upwards
+Min : O(1)
+Max : O(log n)
+
+Deletion : Starts from root. Adjustment from top to bottom.
+Max : O(log n)
+Deletion from max heap deletes the largest element.
+Deletion from min heap deletes the smallest element.
+
+Heap Sort:
+First Create Heap from elements. (O (n log n))
+Than delete elemets from heap to get the sorted list. (O (n log n))
+Total Complexity : O (2n log n) ~ O(n log n)
+
+Heapify:
+Heap Creation Process : Adjustment downwards
+Complexity : O(n)
